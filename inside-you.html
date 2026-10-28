@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inside You – Persönlichkeitstest</title>
+<style>
+:root{
+ --bg:#10131f;--panel:#1a2030;--panel2:#222a3d;
+ --text:#f5f4ff;--muted:#a9b0c5;--accent:#b9a1ff;
+ --pink:#ff9dbb;--mint:#8de6ca;--line:#343c52;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(ellipse at top,#252345 0,#10131f 48%);
+ color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;
+ line-height:1.6;min-height:100vh;
+}
+header{padding:35px 18px 22px;text-align:center}
+.logo{font-size:12px;letter-spacing:4px;color:var(--mint);font-weight:800}
+.hero{font-size:clamp(35px,8vw,65px);line-height:1.05;
+ letter-spacing:-2px;margin:18px 0 12px}
+.hero span{color:var(--accent)}
+header p{max-width:550px;margin:auto;color:var(--muted)}
+main{max-width:790px;padding:0 15px 55px;margin:auto}
+.card{
+ background:rgba(26,32,48,.94);border:1px solid var(--line);
+ border-radius:23px;padding:23px;margin:16px 0;
+ box-shadow:0 15px 50px #0002;
+}
+h2{margin:0 0 12px;font-size:22px}
+h3{margin:0 0 6px}
+.muted{color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tag{background:#2b2949;border:1px solid #484067;
+ border-radius:30px;padding:6px 11px;font-size:12px;color:#ded5ff}
+.progressline{height:7px;background:#30364a;border-radius:20px;overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--pink));transition:.3s}
+.progressinfo{display:flex;justify-content:space-between;gap:10px;
+ font-size:13px;color:var(--muted);margin:9px 0 18px}
+.sectiontitle{font-size:12px;letter-spacing:2px;color:var(--mint);
+ text-transform:uppercase;font-weight:800}
+.question{padding:18px 0;border-bottom:1px solid var(--line)}
+.question:last-child{border-bottom:0}
+.qtop{font-size:11px;color:var(--muted);margin-bottom:7px}
+.qtext{font-size:17px;font-weight:650;margin-bottom:13px}
+.choices{display:grid;grid-template-columns:1fr;gap:7px}
+.choice{
+ display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+ border-radius:12px;padding:10px 12px;cursor:pointer;
+ color:#e6e7f4;transition:.15s;font-size:14px;
+}
+.choice:hover{border-color:var(--accent);background:#ffffff06}
+.choice:has(input:checked){border-color:var(--accent);background:#b9a1ff18}
+.choice input{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0}
+button{border:0;border-radius:12px;padding:13px 17px;font-size:14px;
+ font-weight:750;cursor:pointer;background:var(--accent);color:#18142b}
+button:disabled{opacity:.3;cursor:not-allowed}
+.secondary{background:#30374b;color:var(--text);border:1px solid #424b62}
+.actions{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:20px}
+.actions button{flex:1}
+#result{display:none}
+.typehero{border-radius:20px;padding:25px 20px;
+ background:linear-gradient(135deg,#38305e,#253b4a);text-align:center;
+ border:1px solid #65588e}
+.typeemoji{font-size:65px;line-height:1.3}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mint)}
+.typename{font-size:clamp(27px,6vw,40px);line-height:1.2;margin:8px 0}
+.typehero p{color:#dedcf2;max-width:520px;margin:10px auto}
+.pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:15px}
+.pill{border:1px solid #716694;border-radius:30px;padding:5px 10px;font-size:12px}
+.trait{margin:17px 0}
+.traithead{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.track{height:9px;background:#30364a;border-radius:30px;overflow:hidden;margin-top:7px}
+.fill{height:100%;border-radius:30px;background:linear-gradient(90deg,var(--accent),var(--pink))}
+.feature{padding:16px;border-radius:15px;background:var(--panel2);margin-top:11px}
+.feature p{margin:5px 0 0;color:#c2c8da;font-size:14px}
+.smalltype{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line)}
+.smalltype:last-child{border-bottom:0}
+.smalltype .emoji{font-size:32px}
+.smalltype p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.notice{color:var(--pink);font-size:13px;margin-top:10px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:0 20px 30px}
+@media(min-width:560px){.choices{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.card{padding:17px}.hero{letter-spacing:-1px}.qtext{font-size:16px}}
+@media print{
+ body{background:white;color:#222}
+ header{padding:10px}
+ .card,.typehero,.feature{background:white!important;color:#222;border-color:#ddd;box-shadow:none}
+ .muted,.typehero p,.feature p,.smalltype p{color:#444}
+ #test,#introActions,footer,.actions{display:none!important}
+ #result{display:block!important}
+ .track{background:#ddd}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">✦ INSIDE YOU ✦</div>
+ <h1 class="hero">Entdecke dein<br><span>wahres Ich.</span></h1>
+ <p>100 Fragen. Neue Perspektiven. Ein Persönlichkeitsprofil, das dir hilft, dich selbst besser zu verstehen.</p>
+ <div class="tags" style="justify-content:center">
+  <span class="tag">10 Persönlichkeitsbereiche</span>
+  <span class="tag">100 Fragen</span>
+  <span class="tag">Individuelles Ergebnis</span>
+ </div>
+</header>
+<main>
+<section class="card" id="intro">
+ <div class="sectiontitle">Bevor du beginnst</div>
+ <h2>Es geht nur um dich.</h2>
+ <p>Antworte so, wie du wirklich bist – nicht so, wie du gerne sein möchtest oder wie andere dich sehen sollen.</p>
+ <p class="muted">Wähle die Antwort, die am besten zu dir passt. Es gibt keine richtigen oder falschen Antworten. Am Ende erhältst du einen Haupttyp, weitere Persönlichkeitstendenzen, deine Stärken und mögliche Entwicklungsfelder.</p>
+ <div class="feature"><strong>🕯️ Nimm dir Zeit.</strong><p>Der Test umfasst 10 Abschnitte mit jeweils 10 Fragen. Deine Antworten bleiben in dieser Seite auf deinem Gerät.</p></div>
+ <div class="actions" id="introActions"><button id="start">Meinen Test starten →</button></div>
+</section>
+
+<section class="card" id="test" style="display:none">
+ <div class="sectiontitle" id="sectionName">Abschnitt 1</div>
+ <h2 id="sectionHeading">Deine Persönlichkeit</h2>
+ <div class="progressline"><div id="bar"></div></div>
+ <div class="progressinfo"><span id="progressText">0 von 100 beantwortet</span><span id="pageText">1 / 10</span></div>
+ <div id="questions"></div>
+ <div class="actions">
+  <button class="secondary" id="prev">← Zurück</button>
+  <button id="next">Weiter →</button>
+ </div>
+ <div class="notice" id="notice" role="status"></div>
+</section>
+
+<section class="card" id="result">
+ <div class="sectiontitle">Dein persönliches Profil</div>
+ <h2>Das macht dich aus.</h2>
+ <div class="typehero">
+  <div class="typeemoji" id="typeEmoji">🌙</div>
+  <div class="eyebrow">Dein Persönlichkeitstyp</div>
+  <div class="typename" id="typeName"></div>
+  <p id="typeDesc"></p>
+  <div class="pills" id="typePills"></div>
+ </div>
+ <div class="feature">
+  <h3>✨ Was dich besonders macht</h3>
+  <p id="typeStrength"></p>
+ </div>
+ <div class="feature">
+  <h3>🌱 Was dir helfen kann zu wachsen</h3>
+  <p id="typeGrowth"></p>
+ </div>
+ <h2 style="margin-top:27px">Deine Persönlichkeit in Zahlen</h2>
+ <p class="muted">Die Bereiche zeigen, wie du dich selbst eingeschätzt hast. Sie sind keine Bewertung deines Wertes als Mensch.</p>
+ <div id="scores"></div>
+ <h2 style="margin-top:28px">Deine weiteren Seiten</h2>
+ <div id="otherTypes"></div>
+ <div class="feature">
+  <h3>💭 Deine persönliche Reflexion</h3>
+  <p id="reflection"></p>
+ </div>
+ <div class="actions">
+  <button id="print">Ergebnis speichern / drucken</button>
+  <button class="secondary" id="again">Test wiederholen</button>
+ </div>
+</section>
+</main>
+<footer>INSIDE YOU · Ein Test zur Selbstreflexion · Kein wissenschaftliches Diagnoseinstrument.</footer>
+
+<script>
+const groups = [
+{name:"Empathie",emoji:"💗",type:"Der einfühlsame Mensch",
+ desc:"Du nimmst Stimmungen und Bedürfnisse anderer Menschen aufmerksam wahr. Zwischen den Zeilen bemerkst du oft mehr, als ausgesprochen wird.",
+ strength:"Deine Aufmerksamkeit, dein Mitgefühl und deine Fähigkeit, anderen das Gefühl zu geben, gesehen zu werden.",
+ growth:"Achte darauf, die Gefühle anderer nicht zu deinen eigenen zu machen. Du darfst helfen, ohne jedes Problem lösen zu müssen.",
+ reflection:"Wo kannst du für andere da sein und gleichzeitig gut auf deine eigenen Bedürfnisse achten?"},
+{name:"Offenheit",emoji:"🦋",type:"Der Freigeist",
+ desc:"Du bist neugierig auf neue Ideen, Erfahrungen und Möglichkeiten. Du möchtest die Welt auf deine eigene Weise entdecken und dich nicht unnötig einschränken lassen.",
+ strength:"Neugier, Anpassungsfähigkeit und die Bereitschaft, über den eigenen Tellerrand zu schauen.",
+ growth:"Nicht jede neue Möglichkeit muss verfolgt werden. Manchmal entsteht Freiheit auch dadurch, sich bewusst für einen Weg zu entscheiden.",
+ reflection:"Welche neue Erfahrung würde dich reizen, wenn du dich nicht von der Meinung anderer bremsen ließest?"},
+{name:"Analytik",emoji:"🔎",type:"Der analytische Denker",
+ desc:"Du möchtest verstehen, warum Dinge geschehen. Du denkst gerne nach, prüfst Zusammenhänge und suchst nach einer nachvollziehbaren Erklärung.",
+ strength:"Deine Beobachtungsgabe, dein strukturiertes Denken und deine Fähigkeit, Situationen aus verschiedenen Perspektiven zu betrachten.",
+ growth:"Nicht alles lässt sich vollständig durchdenken. Manchmal ist eine gute Entscheidung besser als das endlose Warten auf absolute Sicherheit.",
+ reflection:"Bei welcher Entscheidung könntest du deinem Denken vertrauen und trotzdem den nächsten Schritt wagen?"},
+{name:"Tatkraft",emoji:"🔥",type:"Der entschlossene Macher",
+ desc:"Du möchtest nicht nur reden, sondern etwas bewegen. Ziele, Herausforderungen und sichtbare Fortschritte können dich besonders motivieren.",
+ strength:"Dein Antrieb, deine Entschlossenheit und deine Bereitschaft, Verantwortung zu übernehmen.",
+ growth:"Pausen sind kein Zeichen von Schwäche. Beziehe andere mit ein und gib dir Raum, bevor aus Motivation dauerhafter Druck wird.",
+ reflection:"Welches Ziel ist dir wirklich wichtig – und welcher kleine Schritt bringt dich ihm näher?"},
+{name:"Ruhe",emoji:"🌙",type:"Der ruhige Beobachter",
+ desc:"Du schätzt Momente der Stille und beobachtest erst einmal, bevor du dich einbringst. Du brauchst nicht ständig Aufmerksamkeit, um dich selbst zu spüren.",
+ strength:"Deine Besonnenheit, deine Aufmerksamkeit für Details und deine Fähigkeit, Situationen ruhig zu betrachten.",
+ growth:"Deine Gedanken und Bedürfnisse verdienen es, gehört zu werden. Du musst nicht warten, bis du vollkommen sicher bist, um dich auszudrücken.",
+ reflection:"Was würdest du häufiger sagen oder tun, wenn du dir erlaubtest, mehr Raum einzunehmen?"},
+{name:"Sozialenergie",emoji:"☀️",type:"Der verbindende Mensch",
+ desc:"Austausch, Begegnungen und gemeinsame Erlebnisse können dir Energie geben. Du bringst dich gerne ein und kannst Menschen zusammenführen.",
+ strength:"Deine Kontaktfreude, deine Initiative und deine Fähigkeit, Gemeinschaft zu schaffen.",
+ growth:"Du musst nicht überall dabei sein. Achte darauf, welche Kontakte dir wirklich guttun und wann du Zeit für dich brauchst.",
+ reflection:"Mit welchen Menschen fühlst du dich am meisten wie du selbst?"},
+{name:"Struktur",emoji:"🧩",type:"Der zuverlässige Organisator",
+ desc:"Du magst Klarheit, Verlässlichkeit und einen Plan. Es gibt dir ein gutes Gefühl, Aufgaben zu ordnen und Dinge Schritt für Schritt zu erledigen.",
+ strength:"Deine Sorgfalt, dein Verantwortungsbewusstsein und deine Fähigkeit, Ordnung in komplexe Aufgaben zu bringen.",
+ growth:"Pläne dürfen sich verändern. Lass Raum für Fehler, spontane Freude und Lösungen, die anders aussehen als ursprünglich gedacht.",
+ reflection:"In welchem Bereich würde dir etwas mehr Flexibilität das Leben leichter machen?"},
+{name:"Unabhängigkeit",emoji:"🦅",type:"Der unabhängige Individualist",
+ desc:"Du möchtest selbst entscheiden und deinen eigenen Überzeugungen folgen. Es ist dir wichtig, dich nicht aus bloßem Anpassungsdruck zu verstellen.",
+ strength:"Deine Eigenständigkeit, deine persönliche Haltung und dein Wunsch, authentisch zu leben.",
+ growth:"Unabhängigkeit bedeutet nicht, alles allein machen zu müssen. Unterstützung anzunehmen kann ebenfalls eine bewusste Entscheidung sein.",
+ reflection:"Wo könntest du Unterstützung zulassen, ohne das Gefühl zu verlieren, selbst zu bestimmen?"},
+{name:"Harmonie",emoji:"🤝",type:"Der harmonieorientierte Mensch",
+ desc:"Vertrauen, Fairness und ein gutes Miteinander sind dir wichtig. Du möchtest Konflikte möglichst respektvoll lösen und Beziehungen schützen.",
+ strength:"Deine Rücksichtnahme, deine Kooperationsfähigkeit und dein Gespür für ein faires Miteinander.",
+ growth:"Harmonie ist nicht dasselbe wie immer nachzugeben. Eine ehrliche Meinungsverschiedenheit kann eine Beziehung sogar stärken.",
+ reflection:"Welche Grenze möchtest du freundlicher, aber klarer kommunizieren?"},
+{name:"Resilienz",emoji:"🌱",type:"Der widerstandsfähige Mensch",
+ desc:"Du traust dir zu, mit Schwierigkeiten umzugehen und aus Erfahrungen zu lernen. Auch wenn nicht alles leicht ist, suchst du nach einem Weg nach vorn.",
+ strength:"Deine Ausdauer, deine Lernbereitschaft und deine Fähigkeit, nach Rückschlägen wieder Orientierung zu finden.",
+ growth:"Stark sein heißt nicht, immer funktionieren zu müssen. Ruhe, Trauer und die Bitte um Hilfe gehören ebenfalls dazu.",
+ reflection:"Was hast du schon einmal bewältigt, das dir heute zeigt, wie viel du lernen kannst?"}
+];
+
+const qs = [
+["Ich merke schnell, wenn jemand traurig oder angespannt ist.",0,0],
+["Ich probiere gerne Wege aus, die ich noch nicht kenne.",1,0],
+["Ich untersuche ein Problem gern, bevor ich eine Lösung wähle.",2,0],
+["Wenn ich ein Ziel habe, beginne ich lieber bald mit der Umsetzung.",3,0],
+["Nach vielen sozialen Kontakten brauche ich manchmal Ruhe.",4,0],
+["Ich komme leicht mit neuen Menschen ins Gespräch.",5,0],
+["Ich plane wichtige Aufgaben gern im Voraus.",6,0],
+["Ich treffe gerne eigene Entscheidungen.",7,0],
+["Ich versuche, Streit respektvoll und fair zu lösen.",8,0],
+["Nach einem Rückschlag suche ich nach einem Weg weiterzumachen.",9,0],
+["Ich höre aufmerksam zu, wenn jemand mir etwas Persönliches erzählt.",0,0],
+["Ich interessiere mich für ungewohnte Ideen und Sichtweisen.",1,0],
+["Ich möchte wissen, welche Gründe hinter einer Behauptung stehen.",2,0],
+["Ich übernehme gerne Verantwortung, wenn etwas erledigt werden muss.",3,0],
+["Ich beobachte eine neue Gruppe erst, bevor ich viel erzähle.",4,0],
+["Gemeinsame Aktivitäten geben mir oft Energie.",5,0],
+["Ich erledige Aufgaben möglichst sorgfältig und systematisch.",6,0],
+["Ich bleibe lieber meinen eigenen Werten treu, als mich anzupassen.",7,0],
+["Ich achte darauf, dass sich andere in einer Gruppe einbezogen fühlen.",8,0],
+["Ich kann aus Fehlern etwas für das nächste Mal mitnehmen.",9,0],
+["Die Gefühle anderer berühren mich oft stark.",0,0],
+["Ich habe Freude daran, neue Orte oder Aktivitäten zu entdecken.",1,0],
+["Ich denke gern über schwierige Fragen gründlich nach.",2,0],
+["Ich motiviere mich, auch wenn eine Aufgabe anstrengend ist.",3,0],
+["Ich genieße es, allein zu sein und meine Gedanken zu ordnen.",4,0],
+["Ich bringe in Gesprächen gerne eigene Ideen ein.",5,0],
+["Ich halte Vereinbarungen zuverlässig ein.",6,0],
+["Ich kann gut Zeit allein verbringen, ohne mich einsam zu fühlen.",7,0],
+["Ich suche lieber eine faire Lösung als einen persönlichen Sieg.",8,0],
+["Auch bei Unsicherheit kann ich meistens einen nächsten Schritt finden.",9,0],
+["Ich versuche, zu verstehen, warum jemand anders reagiert.",0,0],
+["Routine wird mir schnell langweilig, wenn nichts Neues passiert.",1,0],
+["Ich achte auf Details, die für eine Entscheidung wichtig sind.",2,0],
+["Ich packe praktische Probleme lieber an, statt sie aufzuschieben.",3,0],
+["Ich muss nicht ständig im Mittelpunkt stehen.",4,0],
+["Ich genieße lebhafte Gespräche und den Austausch in Gruppen.",5,0],
+["Ich fühle mich wohler, wenn ich einen Überblick über Aufgaben habe.",6,0],
+["Ich hinterfrage Regeln, wenn sie mir nicht sinnvoll erscheinen.",7,0],
+["Ich kann unterschiedliche Meinungen gelten lassen.",8,0],
+["Ich verliere bei Schwierigkeiten nicht sofort die Hoffnung.",9,0],
+["Ich bemerke, wenn jemand Unterstützung gebrauchen könnte.",0,0],
+["Ich bin offen dafür, meine Meinung durch neue Erfahrungen zu ändern.",1,0],
+["Ich trenne bei Entscheidungen möglichst Fakten und Vermutungen.",2,0],
+["Ich freue mich, wenn ich konkrete Ergebnisse sehe.",3,0],
+["Ich denke lieber erst nach, bevor ich etwas Wichtiges sage.",4,0],
+["Ich finde schnell Gesprächsstoff mit anderen.",5,0],
+["Ich arbeite gern Schritt für Schritt auf ein Ergebnis hin.",6,0],
+["Ich möchte meinen Lebensweg selbst gestalten.",7,0],
+["Ich bemühe mich, Kritik respektvoll zu formulieren.",8,0],
+["Ich kann mich nach einer Enttäuschung mit der Zeit neu orientieren.",9,0],
+["Ich kann mitfühlen, auch wenn ich die Situation nicht selbst erlebt habe.",0,0],
+["Ich probiere gerne kreative Lösungen aus.",1,0],
+["Ich prüfe verschiedene Möglichkeiten, bevor ich mich festlege.",2,0],
+["Ich übernehme bei Bedarf die Initiative.",3,0],
+["Ich nehme Stimmungen und Details oft erst einmal still wahr.",4,0],
+["Ich freue mich darauf, neue Menschen kennenzulernen.",5,0],
+["Ich mag es, wenn meine Umgebung übersichtlich ist.",6,0],
+["Ich kann allein loslegen, ohne ständig Bestätigung zu brauchen.",7,0],
+["Mir ist wichtig, dass in Beziehungen beide Seiten gehört werden.",8,0],
+["Ich glaube, dass ich Fähigkeiten durch Übung verbessern kann.",9,0],
+["Ich frage nach, wenn jemand auf mich bedrückt wirkt.",0,0],
+["Ich interessiere mich für Themen außerhalb meiner gewohnten Welt.",1,0],
+["Ich suche gern nach Mustern und Zusammenhängen.",2,0],
+["Ich bleibe an einer Aufgabe, bis ein brauchbarer Fortschritt erreicht ist.",3,0],
+["Ich genieße ruhige Momente ohne Unterhaltung.",4,0],
+["Ich beteilige mich gerne an gemeinsamen Unternehmungen.",5,0],
+["Ich merke mir Termine und wichtige Absprachen.",6,0],
+["Ich kann eine andere Entscheidung treffen als mein Freundeskreis.",7,0],
+["Ich versuche, Missverständnisse durch Gespräche zu klären.",8,0],
+["Wenn etwas nicht klappt, versuche ich es auf eine andere Weise.",9,0],
+["Ich nehme Rücksicht darauf, wie meine Worte andere treffen könnten.",0,0],
+["Ich bin neugierig auf Menschen mit einem anderen Hintergrund.",1,0],
+["Ich möchte verstehen, wie etwas funktioniert.",2,0],
+["Ich kann auch unter Zeitdruck aktiv werden.",3,0],
+["Ich überlege gern erst für mich, bevor ich Rat suche.",4,0],
+["Ich kann andere für eine gemeinsame Idee begeistern.",5,0],
+["Ich teile große Aufgaben gern in kleinere Schritte auf.",6,0],
+["Ich brauche nicht die Zustimmung aller, um zu mir zu stehen.",7,0],
+["Ich bin bereit, einen Kompromiss zu suchen, wenn er fair ist.",8,0],
+["Ich kann akzeptieren, dass manche Dinge Zeit brauchen.",9,0],
+["Ich nehme wahr, wenn jemand sich ausgeschlossen fühlt.",0,0],
+["Ich mag Abwechslung und neue Herausforderungen.",1,0],
+["Ich suche bei Problemen nach nachvollziehbaren Erklärungen.",2,0],
+["Ich setze mir Ziele und arbeite auf sie hin.",3,0],
+["Ich kann mich auch mit wenigen engen Kontakten wohlfühlen.",4,0],
+["Ich zeige meine Begeisterung im Gespräch offen.",5,0],
+["Ich versuche, Aufgaben rechtzeitig zu erledigen.",6,0],
+["Ich möchte mich nicht verstellen, nur um dazuzugehören.",7,0],
+["Ich kann anderer Meinung sein und trotzdem respektvoll bleiben.",8,0],
+["Ich kann mir nach schwierigen Phasen neue Hoffnung machen.",9,0],
+["Ich helfe gern, wenn jemand wirklich Unterstützung braucht.",0,0],
+["Ich bin bereit, Gewohntes zu hinterfragen.",1,0],
+["Ich denke über mögliche Folgen einer Entscheidung nach.",2,0],
+["Ich handle gern, statt nur auf bessere Bedingungen zu warten.",3,0],
+["Ich nehme mir bewusst Zeit, um Eindrücke zu verarbeiten.",4,0],
+["Ich suche gerne den Austausch, wenn mich etwas beschäftigt.",5,0],
+["Andere können sich in der Regel auf meine Zusagen verlassen.",6,0],
+["Ich schätze es, meinen eigenen Stil und meine Interessen zu entwickeln.",7,0],
+["Ich achte darauf, Konflikte nicht unnötig eskalieren zu lassen.",8,0],
+["Ich kann mir selbst verzeihen und aus Erfahrungen lernen.",9,0],
+["Ich versuche, Menschen nicht vorschnell zu beurteilen.",0,0],
+["Neue Perspektiven machen mich neugierig.",1,0],
+["Ich kann meine Meinung ändern, wenn überzeugende Gründe auftauchen.",2,0],
+["Ich traue mir zu, auch schwierige Aufgaben anzugehen.",3,0],
+["Ich kann zuhören, ohne sofort etwas sagen zu müssen.",4,0],
+["Ich knüpfe gerne Kontakte und halte Gespräche am Laufen.",5,0],
+["Ich fühle mich gut, wenn ich Ordnung in eine unübersichtliche Aufgabe bringe.",6,0],
+["Ich entscheide gern selbst, was für mein Leben richtig ist.",7,0],
+["Ich kann die Bedürfnisse anderer berücksichtigen, ohne immer nachzugeben.",8,0],
+["Ich sehe Schwierigkeiten auch als Gelegenheit, etwas zu lernen.",9,0]
+];
+
+// Alle Fragen sind positiv formuliert und werden auf einer Skala von 1 bis 5 bewertet.
+const opts=["Stimmt gar nicht","Stimmt eher nicht","Teils / teils","Stimmt eher","Stimmt völlig"];
+const headings=[
+"Wie du andere wahrnimmst","Deine Neugier","Wie dein Kopf arbeitet",
+"Dein Antrieb","Deine innere Welt","Dein Kontakt mit Menschen",
+"Dein Umgang mit Aufgaben","Dein eigener Weg","Dein Miteinander","Deine innere Stärke"
+];
+let answers={};let page=0;
+const $=id=>document.getElementById(id);
+
+$("start").onclick=()=>{
+ $("intro").style.display="none";$("test").style.display="block";
+ renderPage();window.scrollTo({top:0,behavior:"smooth"});
+};
+
+function renderPage(){
+ $("sectionName").textContent="Abschnitt "+(page+1)+" von 10";
+ $("sectionHeading").textContent=headings[page];
+ $("pageText").textContent=(page+1)+" / 10";
+ $("questions").innerHTML="";
+ for(let i=page*10;i<page*10+10;i++){
+  const [text,cat]=qs[i];
+  const wrap=document.createElement("div");wrap.className="question";
+  const num=document.createElement("div");num.className="qtop";
+  num.textContent="FRAGE "+(i+1)+" · "+groups[cat].name.toUpperCase();
+  const title=document.createElement("div");title.className="qtext";title.textContent=text;
+  const choices=document.createElement("div");choices.className="choices";
+  opts.forEach((label,j)=>{
+   const lab=document.createElement("label");lab.className="choice";
+   const radio=document.createElement("input");radio.type="radio";
+   radio.name="q"+i;radio.value=j+1;radio.checked=answers[i]===j+1;
+   radio.onchange=()=>{answers[i]=j+1;updateProgress();$("notice").textContent="";};
+   const span=document.createElement("span");span.textContent=(j+1)+". "+label;
+   lab.append(radio,span);choices.append(lab);
+  });
+  wrap.append(num,title,choices);$("questions").append(wrap);
+ }
+ $("prev").disabled=page===0;
+ $("next").textContent=page===9?"Auswertung erstellen ✨":"Weiter →";
+ updateProgress();
+ $("test").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function updateProgress(){
+ const count=Object.keys(answers).length;
+ $("bar").style.width=(count)+"%";
+ $("progressText").textContent=count+" von 100 Fragen beantwortet";
+}
+$("prev").onclick=()=>{if(page>0){page--;renderPage();}};
+$("next").onclick=()=>{
+ const missing=[];
+ for(let i=page*10;i<page*10+10;i++)if(!answers[i])missing.push(i);
+ if(missing.length){
+  $("notice").textContent="Beantworte bitte noch "+missing.length+" Frage(n) in diesem Abschnitt.";
+  const target=$("questions").children[missing[0]-page*10];
+  target.scrollIntoView({behavior:"smooth",block:"center"});return;
+ }
+ $("notice").textContent="";
+ if(page<9){page++;renderPage();}
+ else showResult();
+};
+
+function showResult(){
+ 
+const totals = groups.map((g, cat) => {
+  const vals = qs
+    .map((q, i) => q[1] === cat ? Number(answers[i]) : null)
+    .filter(v => Number.isFinite(v) && v >= 1 && v <= 5);
+
+  const score = vals.length > 0
+    ? vals.reduce((sum, v) => sum + v, 0) / vals.length
+    : 0;
+
+  return { ...g, score };
+}).sort((a, b) => b.score - a.score);
+ const main=totals[0],second=totals[1],third=totals[2];
+ $("typeEmoji").textContent=main.emoji;
+ $("typeName").textContent=main.type;
+ $("typeDesc").textContent=main.desc;
+ $("typePills").innerHTML="";
+ [second,third].forEach(t=>{
+  const pill=document.createElement("span");pill.className="pill";
+  pill.textContent=t.emoji+" "+t.type; $("typePills").append(pill);
+ });
+ $("typeStrength").textContent=main.strength;
+ $("typeGrowth").textContent=main.growth;
+ $("reflection").textContent=main.reflection;
+ $("scores").innerHTML="";
+ totals.forEach(t=>{
+  const row=document.createElement("div");row.className="trait";
+  const head=document.createElement("div");head.className="traithead";
+  const name=document.createElement("strong");name.textContent=t.emoji+" "+t.name;
+  const score=document.createElement("span");score.textContent=t.score.toFixed(1).replace(".",",")+" / 5";
+  head.append(name,score);
+  const track=document.createElement("div");track.className="track";
+  const fill=document.createElement("div");fill.className="fill";
+  fill.style.width=(t.score/5*100)+"%";track.append(fill);
+  row.append(head,track);$("scores").append(row);
+ });
+ $("otherTypes").innerHTML="";
+ totals.slice(1,5).forEach(t=>{
+  const box=document.createElement("div");box.className="smalltype";
+  const emoji=document.createElement("div");emoji.className="emoji";emoji.textContent=t.emoji;
+  const body=document.createElement("div");
+  const title=document.createElement("strong");title.textContent=t.type+" · "+t.score.toFixed(1).replace(".",",")+"/5";
+  const p=document.createElement("p");p.textContent=t.desc;
+  body.append(title,p);box.append(emoji,body);$("otherTypes").append(box);
+ });
+ $("test").style.display="none";$("result").style.display="block";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+$("print").onclick=()=>window.print();
+$("again").onclick=()=>{
+ answers={};page=0;$("result").style.display="none";
+ $("intro").style.display="block";
+ window.scrollTo({top:0,behavior:"smooth"});
+};
+</script>
+</body>
+</html>
